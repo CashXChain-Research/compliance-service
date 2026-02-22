@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Counterparty {
+  id        String   @id @default(uuid())
+  name      String?
+  address   String?
+  createdAt DateTime @default(now())
+
+  @@index([address])
+}
+
+model ListEntry {
+  id            String   @id @default(uuid())
+  listType      String   // "blacklist" | "whitelist"
+  address       String   // counterparty id or wallet
+  reason        String?
+  scope         String?
+  createdAt     DateTime @default(now())
+
+  @@unique([listType, address])
+  @@index([listType])
+}
+
+model ComplianceDecision {
+  id                 String    @id @default(uuid())
+  status             String    // ALLOW | BLOCK | REVIEW
+  reasons            Json?     // string[]
+  sender             String?
+  receiver           String?
+  amount             String?
+  currency           String?
+  inputSnapshotHash  String?
+  createdAt          DateTime  @default(now())
+  auditLogs          AuditLog[]
+
+  @@index([status])
+  @@index([sender])
+  @@index([receiver])
+}
+
+model AuditLog {
+  id                 String             @id @default(uuid())
+  decisionId         String?
+  decision           ComplianceDecision? @relation(fields: [decisionId], references: [id], onDelete: NoAction)
+  ruleName           String?
+  inputSnapshotHash  String?
+  outcome            String?
+  reasons            Json?               // string[]
+  createdAt          DateTime           @default(now())
+  type               String             // legacy: e.g. "rule:ruleName"
+  payload            Json?
+
+  @@index([decisionId])
+  @@index([createdAt])
+}
