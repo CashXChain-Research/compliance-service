@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Fastify from 'fastify';
 import { precheckRoutes } from './routes/precheck';
 import { listsRoutes } from './routes/lists';
@@ -28,9 +29,11 @@ async function start() {
   app.log.info({ port }, 'server listening');
 }
 
-start().catch((err) => {
-  app.log.error({ err }, 'server failed');
+start().catch((err: NodeJS.ErrnoException) => {
+  const message = err?.code === 'EADDRINUSE'
+    ? `Port ${Number(process.env.PORT) || 3000} already in use. Stop the other process or set PORT to a different value.`
+    : err?.message ?? String(err);
+  console.error('[ERROR] server failed:', message);
+  if (err?.stack) console.error(err.stack);
   process.exit(1);
 });
-
-console.log(app.printRoutes());

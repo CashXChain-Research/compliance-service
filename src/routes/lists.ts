@@ -24,8 +24,8 @@ export const listsRoutes: FastifyPluginAsync = async (app) => {
     const listType = apiListTypeToDb(type);
     const entry = await prisma.listEntry.upsert({
       where: { listType_address: { listType, address: counterpartyId } },
-      create: { listType, address: counterpartyId, reason, scope },
-      update: { reason: reason ?? undefined, scope: scope ?? undefined },
+      create: { listType, address: counterpartyId, reason: reason ?? null, scope: scope ?? null },
+      update: { reason: reason ?? null, scope: scope ?? null },
     });
     return reply.status(201).send({
       id: entry.id,

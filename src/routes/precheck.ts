@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { precheckBodySchema } from '../utils/validate';
 import { policyEngine } from '../domain/policyEngine';
 import { signDecisionToken, verifyDecisionToken } from '../domain/decisionSigner';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../db/prisma';
 import { sha256InputSnapshot } from '../utils/hash';
 
@@ -85,7 +86,7 @@ export const precheckRoutes: FastifyPluginAsync = async (app) => {
           outcome: r.outcome,
           reasons,
           type: `rule:${r.ruleName}`,
-          payload: { ruleName: r.ruleName, outcome: r.outcome, reason: r.reason } as Record<string, unknown>,
+          payload: { ruleName: r.ruleName, outcome: r.outcome, reason: r.reason ?? null } as Prisma.InputJsonValue,
         },
       });
     }

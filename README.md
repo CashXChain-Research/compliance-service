@@ -32,7 +32,14 @@ infra/
 ## Setup
 
 1. Copy `.env.example` to `.env` and set `DATABASE_URL`, `JWT_SECRET`.
-2. Start DB: `docker compose -f infra/docker-compose.yml up -d`
+
+2. **Database** (choose one):
+   - **With Docker (Windows):** Install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/), start it, then run:
+     ```powershell
+     docker compose -f infra/docker-compose.yml up -d
+     ```
+   - **Without Docker:** Use a local Postgres or a hosted DB (e.g. [Neon](https://neon.tech), [Supabase](https://supabase.com)). Put the connection string in `.env` as `DATABASE_URL`.
+
 3. Migrate: `npx prisma migrate dev`
 4. Run: `npm run dev`
 
